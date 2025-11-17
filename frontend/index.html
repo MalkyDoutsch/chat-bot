@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat Prompt UI</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f4f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .container {
+    background-color: #fff;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 600px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  textarea {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    font-size: 16px;
+  }
+  button {
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background-color: #2563eb;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  button:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+  }
+  pre {
+    background-color: #e5e7eb;
+    padding: 16px;
+    border-radius: 12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 style="text-align:center;">Chat Prompt UI</h1>
+  <textarea id="userInput" rows="4" placeholder="Write your input here..."></textarea>
+  <button id="sendBtn">Send</button>
+  <p id="loading" style="text-align:center; display:none;">Loading...</p>
+  <pre id="response"></pre>
+</div>
+
+<script>
+  const sendBtn = document.getElementById('sendBtn');
+  const userInput = document.getElementById('userInput');
+  const responseEl = document.getElementById('response');
+  const loadingEl = document.getElementById('loading');
+
+  sendBtn.addEventListener('click', async () => {
+    const input = userInput.value.trim();
+    if (!input) return;
+
+    loadingEl.style.display = 'block';
+    responseEl.textContent = '';
+    sendBtn.disabled = true;
+
+    try {
+      const res = await fetch('http://localhost:3001/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: input })
+      });
+      const data = await res.json();
+      responseEl.textContent = JSON.stringify(data, null, 2);
+    } catch (err) {
+      responseEl.textContent = JSON.stringify({ error: 'Request failed' }, null, 2);
+    } finally {
+      loadingEl.style.display = 'none';
+      sendBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

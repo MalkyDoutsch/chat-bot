@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from services import chat
 
 app = Flask(__name__)
+CORS(app)
 # localhost:3001
 
 @app.route("/", methods=["POST"])
